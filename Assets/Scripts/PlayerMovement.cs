@@ -85,22 +85,44 @@ public class PlayerMovement : MonoBehaviour {
 			{
 			playerOnGround = false;
 			OnGroundTimer = TotalPlayerOnGroundTime;
-				
-			if (playerChargeJumpForce >= PlayerJumpMaxHeight)
-			{
-				Mathf.Clamp (playerChargeJumpForce, 0, PlayerJumpMaxHeight);
-				playerCurrentJumps++;
-				rb.velocity = new Vector3 ((HorizontalMotion * PlayerSpeed * 3), (PlayerJumpMaxHeight * playerCurrentJumps), 0);
-				playerChargeJumpForce = PlayerJumpMinHeight;
-			}
-				
-			else 
-			{
-				playerCurrentJumps++;		
-				rb.velocity = new Vector3 ((HorizontalMotion * PlayerSpeed * 3), (playerChargeJumpForce*playerCurrentJumps), 0);
-				playerChargeJumpForce = PlayerJumpMinHeight;
+            if (playerCurrentJumps == 0)
+            {
+                print("Jump Type 1");
+                if (playerChargeJumpForce >= PlayerJumpMaxHeight)
+                {
+                    Mathf.Clamp(playerChargeJumpForce, 0, PlayerJumpMaxHeight);
+                    playerCurrentJumps++;
+                    rb.velocity = new Vector3((HorizontalMotion * 50), PlayerJumpMaxHeight, 0);
+                    playerChargeJumpForce = PlayerJumpMinHeight;
+                }
 
-			}
+                else
+                {
+                    playerCurrentJumps++;
+                    rb.velocity = new Vector3((HorizontalMotion * 50), playerChargeJumpForce, 0);
+                    playerChargeJumpForce = PlayerJumpMinHeight;
+
+                }
+            }
+            else
+            {
+                print("Jump Type 2");
+                if (playerChargeJumpForce >= PlayerJumpMaxHeight)
+                {
+                    Mathf.Clamp(playerChargeJumpForce, 0, PlayerJumpMaxHeight);
+                    playerCurrentJumps++;
+                    rb.velocity = new Vector3((HorizontalMotion * 50), (PlayerJumpMaxHeight * (playerCurrentJumps / 1.5f)), 0);
+                    playerChargeJumpForce = PlayerJumpMinHeight;
+                }
+
+                else
+                {
+                    playerCurrentJumps++;
+                    rb.velocity = new Vector3((HorizontalMotion * 50), (playerChargeJumpForce * (playerCurrentJumps / 1.5f)), 0);
+                    playerChargeJumpForce = PlayerJumpMinHeight;
+
+                }
+            }
 			
 		}
 	}
