@@ -34,7 +34,10 @@ public class PlayerMovement : MonoBehaviour {
 
 
 		playerHorizontalMovement *= Time.deltaTime * PlayerSpeed;
-		transform.Translate (playerHorizontalMovement, 0, 0);
+        if (playerOnGround == true)
+        {
+            transform.Translate(playerHorizontalMovement, 0, 0);
+        }
 
 		if (Input.GetButton ("Jump")) 
 		{
@@ -49,7 +52,7 @@ public class PlayerMovement : MonoBehaviour {
 				playerCurrentJumps = 0;
 				OnGroundTimer = TotalPlayerOnGroundTime;
 			}
-			Jump ();
+			Jump (playerHorizontalMovement);
 			OnGroundTimer = TotalPlayerOnGroundTime;
 
 			if (playerCurrentJumps == playerMaxJumpCombo) 
@@ -76,7 +79,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	}
 		
-	void Jump()
+	void Jump(float HorizontalMotion)
 		{
 		if (playerOnGround == true)
 			{
@@ -87,14 +90,14 @@ public class PlayerMovement : MonoBehaviour {
 			{
 				Mathf.Clamp (playerChargeJumpForce, 0, PlayerJumpMaxHeight);
 				playerCurrentJumps++;
-				rb.velocity = new Vector3 (0, (PlayerJumpMaxHeight * playerCurrentJumps), 0);
+				rb.velocity = new Vector3 ((HorizontalMotion * PlayerSpeed * 3), (PlayerJumpMaxHeight * playerCurrentJumps), 0);
 				playerChargeJumpForce = PlayerJumpMinHeight;
 			}
 				
 			else 
 			{
 				playerCurrentJumps++;		
-				rb.velocity = new Vector3 (0, (playerChargeJumpForce*playerCurrentJumps), 0);
+				rb.velocity = new Vector3 ((HorizontalMotion * PlayerSpeed * 3), (playerChargeJumpForce*playerCurrentJumps), 0);
 				playerChargeJumpForce = PlayerJumpMinHeight;
 
 			}
