@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement; 
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
 
     public float TotalTime
     {
-        get { return poolTime + levelTime;}
+        get { return poolTime + levelTime; }
     }
 
     private void Awake()
@@ -97,10 +97,11 @@ public class GameManager : MonoBehaviour
 
     public void StartNewGame()
     {
-        if(SceneManager.GetActiveScene().buildIndex != 1)
+        if (SceneManager.GetActiveScene().buildIndex != 1)
         {
             SceneManager.LoadScene(1);
         }
+        PlaySound(11);
 
         SceneManager.LoadScene(GetLevelIndex(currentLevel), LoadSceneMode.Additive);
 
@@ -109,13 +110,13 @@ public class GameManager : MonoBehaviour
         poolTime = startPoolTime - defaultLevelTime;
         levelTime = defaultLevelTime;
         Debug.Log("Started new game.");
-    } 
+    }
 
     // --- Time Selection ---
 
     public void StartDrainingTime(bool addingTimeToLevel)
     {
-        if(addingTimeToLevel)
+        if (addingTimeToLevel)
             StartCoroutine(addTimeToLevel);
         else
             StartCoroutine(addTimeToPool);
@@ -160,11 +161,12 @@ public class GameManager : MonoBehaviour
 
     public void StartLevel()
     {
-        if(levelTime <= 0)
+        if (levelTime <= 0)
         {
             return;
         }
 
+        PlaySound(0);
         inLevel = true;
         Debug.Log("Started new level.");
         SceneManager.LoadScene(GetLevelIndex(currentLevel));
@@ -189,12 +191,21 @@ public class GameManager : MonoBehaviour
     public void FinishLevel()
     {
         StopCoroutine(level);
+
+        if (levelTime <= 0 || poolTime <= 0)
+        {
+            Debug.Log("Ran out of time.");
+            SceneManager.LoadScene(3);
+            PlaySound(10);
+            return;
+        }
+
         inLevel = false;
 
         // Add powerups.
         if (levelTime > 0)
         {
-            if(Inventory.instance != null)
+            if (Inventory.instance != null)
             {
                 Inventory.instance.TurnPowerupsIntoPool();
             }
@@ -206,13 +217,13 @@ public class GameManager : MonoBehaviour
             SceneManager.LoadScene(3);
             return;
         }
-        
+
         totalLevelTime = 0;
 
         currentLevel++;
         levelTime = 0;
 
-        if(poolTime >= defaultLevelTime)
+        if (poolTime >= defaultLevelTime)
         {
             poolTime -= defaultLevelTime;
             levelTime = defaultLevelTime;
@@ -223,33 +234,31 @@ public class GameManager : MonoBehaviour
             poolTime = 0;
         }
 
-        if(currentLevel == 4)
+        if (currentLevel == 4)
         {
             SceneManager.LoadScene(4);
+            PlaySound(9);
             return;
         }
 
         if (SceneManager.GetActiveScene().buildIndex != 1)
-        {
-            SceneManager.LoadScene(1);
+        {         
+            SceneManager.LoadScene(1);          
         }
+        PlaySound(9);
 
         SceneManager.LoadScene(GetLevelIndex(currentLevel), LoadSceneMode.Additive);
     }
 
     private int GetLevelIndex(int level)
     {
-        switch(currentLevel)
+        switch (currentLevel)
         {
             default:
             case 0:
                 return 5;
             case 1:
                 return 6;
-            case 2:
-                return 7;
-            case 3:
-                return 8;
         }
     }
 
@@ -266,12 +275,12 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator AddTime(float time)
     {
-        while(time > 0)
+        while (time > 0)
         {
             time -= Time.deltaTime * timePickupSpeed;
             levelTime += Time.deltaTime * timePickupSpeed;
 
-            if(levelTime > totalLevelTime)
+            if (levelTime > totalLevelTime)
             {
                 totalLevelTime = levelTime;
             }
@@ -293,7 +302,7 @@ public class GameManager : MonoBehaviour
     // -- Spawning
     public void LevelLoaded()
     {
-        if(inLevel)
+        if (inLevel)
         {
             SpawnCharacter();
             SpawnGameCamera();
@@ -320,5 +329,88 @@ public class GameManager : MonoBehaviour
     {
         Transform spawn = GameObject.FindGameObjectWithTag("PlayerSpawn").transform;
         Instantiate(player, spawn.position, Quaternion.identity);
+    }
+
+    // -- Audio
+
+    // 0
+    public AudioClip uiButton; //-
+    // 1
+    public AudioClip pickupItem; //-
+
+    // 2
+    public AudioClip[] bigPanda;
+
+    // 3
+    public AudioClip[] redPanda;
+
+    // 4
+    public AudioClip[] jump; //-
+
+    // 5
+    public AudioClip drain;
+
+    // 6
+    public AudioClip fill;
+
+    // 7
+    public AudioClip fillFast;
+
+    // 8
+    public AudioClip[] footstep;
+
+    // 9
+    public AudioClip win; //-
+
+    // 10
+    public AudioClip lose; //-
+
+    // 11
+    public AudioClip bongos; //-
+
+    public void PlaySound(int sound)
+    {
+        AudioClip clip;
+        switch (sound)
+        {
+            default:
+                break;
+            case 0:
+                GetComponent<AudioSource>().PlayOneShot(uiButton);
+                break;
+            case 1:
+                GetComponent<AudioSource>().PlayOneShot(pickupItem);
+                break;
+            case 2:
+                GetComponent<AudioSource>().PlayOneShot(bigPanda[Random.Range(0, bigPanda.Length)]);
+                break;
+            case 3:
+                GetComponent<AudioSource>().PlayOneShot(redPanda[Random.Range(0, redPanda.Length)]);
+                break;
+            case 4:
+                GetComponent<AudioSource>().PlayOneShot(jump[Random.Range(0, jump.Length)]);
+                break;
+            case 5:
+                GetComponent<AudioSource>().PlayOneShot(drain);
+                break;
+            case 6:
+                GetComponent<AudioSource>().PlayOneShot(fill);
+                break;
+            case 7:
+                GetComponent<AudioSource>().PlayOneShot(fillFast);
+                break;
+            case 8:
+                GetComponent<AudioSource>().PlayOneShot(footstep[Random.Range(0, jump.Length)]);
+                break;
+            case 9:
+                GetComponent<AudioSource>().PlayOneShot(win);
+                break;
+            case 10:
+                GetComponent<AudioSource>().PlayOneShot(lose);
+                break;
+            case 11:
+                GetComponent<AudioSource>().PlayOneShot(bongos);
+                break;
+        }
     }
 }

@@ -37,12 +37,12 @@ public class PlayerMovement : MonoBehaviour
         get { return facingRight; }
         set
         {
-            if(value && !facingRight)
+            if (value && !facingRight)
             {
                 FaceRight();
                 facingRight = true;
             }
-            else if(!value && facingRight)
+            else if (!value && facingRight)
             {
                 FaceLeft();
                 facingRight = false;
@@ -67,11 +67,11 @@ public class PlayerMovement : MonoBehaviour
 
         // Animation
         idleTime += Time.deltaTime;
-        if(Input.anyKeyDown || !playerOnGround)
+        if (Input.anyKeyDown || !playerOnGround)
         {
             idleTime = 0f;
         }
-        if(idleTime >= timeUntilWave)
+        if (idleTime >= timeUntilWave)
         {
             charAnimator.SetBool("isWaving", true);
         }
@@ -79,14 +79,14 @@ public class PlayerMovement : MonoBehaviour
         {
             charAnimator.SetBool("isWaving", false);
         }
-        if(playerOnGround && !aboutToJump)
+        if (playerOnGround && !aboutToJump)
         {
             charAnimator.SetBool("isJumping", false);
         }
 
         if (playerHorizontalMovement > 0.005f)
         {
-            if(playerOnGround)
+            if (playerOnGround)
                 charAnimator.SetBool("isRunning", true);
             else
                 charAnimator.SetBool("isRunning", false);
@@ -172,7 +172,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (playerOnGround == true)
         {
-
+            GameManager.instance.PlaySound(4);
 
             playerOnGround = false;
             OnGroundTimer = TotalPlayerOnGroundTime;
@@ -265,7 +265,7 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator TurnToRight(Transform tran)
     {
-        while(tran.eulerAngles.y > 90)
+        while (tran.eulerAngles.y > 90)
         {
             tran.Rotate(0, -(Time.deltaTime * turnSpeed), 0);
             yield return null;
@@ -284,13 +284,13 @@ public class PlayerMovement : MonoBehaviour
     private void AboutToJumpCooldown()
     {
         charAnimator.SetBool("isJumping", true);
-        Invoke("ResetAboutToJump", 2f);
+        Invoke("ResetAboutToJump", 0.7f);
     }
 
     private void ResetAboutToJump()
     {
-        
-        aboutToJump = false;      
+
+        aboutToJump = false;
     }
     //End of Script		
 }
