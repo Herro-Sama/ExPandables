@@ -202,7 +202,7 @@ public class PlayerMovement : MonoBehaviour
                     playerCurrentJumps++;
                     if (PlayerLongJumping == true)
                     {
-                        rb.velocity = new Vector3(0, (PlayerJumpMaxHeight * (playerCurrentJumps / 3f)), 0);
+                        rb.velocity = new Vector3(0, (PlayerJumpMaxHeight * (playerCurrentJumps / 2.5f)), 0);
                         playerChargeJumpForce = PlayerJumpMinHeight;
                         PlayerLongJumping = false;
                     }
@@ -218,7 +218,7 @@ public class PlayerMovement : MonoBehaviour
                     playerCurrentJumps++;
                     if (PlayerLongJumping == true)
                     {
-                        rb.velocity = new Vector3((HorizontalMotion * 20), (PlayerJumpMaxHeight * (playerCurrentJumps / 2.5f)), 0);
+                        rb.velocity = new Vector3((HorizontalMotion * 20), (PlayerJumpMaxHeight * (playerCurrentJumps / 3f)), 0);
                         playerChargeJumpForce = PlayerJumpMinHeight;
                         PlayerLongJumping = false;
                     }
