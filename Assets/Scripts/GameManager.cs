@@ -239,7 +239,14 @@ public class GameManager : MonoBehaviour
 
     private int GetLevelIndex(int level)
     {
-        return 5;
+        switch(currentLevel)
+        {
+            default:
+            case 0:
+                return 5;
+            case 1:
+                return 6;
+        }
     }
 
     // -- Pickup --
