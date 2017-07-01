@@ -19,7 +19,26 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private float timePickupSpeed = 100f;
 
+    [SerializeField]
+    private int levels = 4;
+    public int TotalLevels
+    {
+        get { return levels; }
+    }
+
+    [SerializeField]
+    private GameObject panCamera;
+
+    [SerializeField]
+    private GameObject gameCamera;
+
+    [SerializeField]
+    private GameObject player;
+
+
     private int currentLevel = 0;
+    private bool countTime = true;
+    private bool inLevel = false;
 
     // Used for the UI timer bar.
     private float totalLevelTime = 0;
@@ -78,16 +97,19 @@ public class GameManager : MonoBehaviour
 
     public void StartNewGame()
     {
-        if(SceneManager.GetActiveScene().buildIndex != 0)
+        if(SceneManager.GetActiveScene().buildIndex != 1)
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(1);
         }
 
+        SceneManager.LoadScene(GetLevelIndex(currentLevel), LoadSceneMode.Additive);
+
+        inLevel = false;
         currentLevel = 0;
         poolTime = startPoolTime - defaultLevelTime;
         levelTime = defaultLevelTime;
         Debug.Log("Started new game.");
-    }
+    } 
 
     // --- Time Selection ---
 
@@ -143,8 +165,10 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        inLevel = true;
         Debug.Log("Started new level.");
-        LoadGameLevel(currentLevel);
+        SceneManager.LoadScene(GetLevelIndex(currentLevel));
+        SceneManager.LoadScene(2, LoadSceneMode.Additive);
         totalLevelTime = levelTime;
         level = Level();
         StartCoroutine(level);
@@ -152,9 +176,10 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator Level()
     {
-        while(levelTime > 0)
+        while (levelTime > 0)
         {
-            levelTime -= Time.deltaTime;
+            if (countTime)
+                levelTime -= Time.deltaTime;
             yield return null;
         }
 
@@ -164,16 +189,16 @@ public class GameManager : MonoBehaviour
     public void FinishLevel()
     {
         StopCoroutine(level);
+        inLevel = false;
 
         // Add powerups.
-        if(levelTime > 0)
+        if (levelTime > 0)
         {
             if(Inventory.instance != null)
             {
                 Inventory.instance.TurnPowerupsIntoPool();
             }
         }
-
 
         if (levelTime <= 0 || poolTime <= 0)
         {
@@ -198,15 +223,23 @@ public class GameManager : MonoBehaviour
             poolTime = 0;
         }
 
-        if (SceneManager.GetActiveScene().buildIndex != 0)
+        if(currentLevel == 4)
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(4);
+            return;
         }
+
+        if (SceneManager.GetActiveScene().buildIndex != 1)
+        {
+            SceneManager.LoadScene(1);
+        }
+
+        SceneManager.LoadScene(GetLevelIndex(currentLevel), LoadSceneMode.Additive);
     }
 
-    private void LoadGameLevel(int level)
+    private int GetLevelIndex(int level)
     {
-        SceneManager.LoadScene(1);
+        return 5;
     }
 
     // -- Pickup --
@@ -238,11 +271,43 @@ public class GameManager : MonoBehaviour
 
     public void StopCounter()
     {
-        //countTime = false;
+        countTime = false;
     }
 
     public void RestartCounter()
     {
-        //countTime = true;
+        countTime = true;
+    }
+
+    // -- Spawning
+    public void LevelLoaded()
+    {
+        if(inLevel)
+        {
+            SpawnCharacter();
+            SpawnGameCamera();
+        }
+        else
+        {
+            SpawnPanCamera();
+        }
+    }
+
+    private void SpawnPanCamera()
+    {
+        Transform spawn = GameObject.FindGameObjectWithTag("PanCameraSpawn").transform;
+        Instantiate(panCamera, spawn.position, Quaternion.identity);
+    }
+
+    private void SpawnGameCamera()
+    {
+        Transform spawn = GameObject.FindGameObjectWithTag("GameCameraSpawn").transform;
+        Instantiate(gameCamera, spawn.position, Quaternion.identity);
+    }
+
+    private void SpawnCharacter()
+    {
+        Transform spawn = GameObject.FindGameObjectWithTag("PlayerSpawn").transform;
+        Instantiate(player, spawn.position, Quaternion.identity);
     }
 }

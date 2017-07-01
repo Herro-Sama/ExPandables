@@ -21,11 +21,14 @@ public class TimeBubble : MonoBehaviour
 
     private void Update()
     {
+        image.fillAmount = (pool ? GameManager.instance.PoolTime : GameManager.instance.LevelTime) / GameManager.instance.TotalTime;
+        /*
         image.rectTransform.localScale =
             new Vector3(
                 (pool ? GameManager.instance.PoolTime : GameManager.instance.LevelTime) / scaleFactor,
                 (pool ? GameManager.instance.PoolTime : GameManager.instance.LevelTime) / scaleFactor,
                 (pool ? GameManager.instance.PoolTime : GameManager.instance.LevelTime) / scaleFactor
         );
+        */
     }
 }

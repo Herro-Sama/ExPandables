@@ -15,6 +15,6 @@ public class LevelTitle : MonoBehaviour
 
     private void Start()
     {
-        text.text = "Level " + (GameManager.instance.CurrentLevel + 1).ToString("00");
+        text.text = "Level " + (GameManager.instance.CurrentLevel + 1).ToString("0") + " / " + (GameManager.instance.TotalLevels).ToString("0");
     }
 }
