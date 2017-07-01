@@ -246,6 +246,10 @@ public class GameManager : MonoBehaviour
                 return 5;
             case 1:
                 return 6;
+            case 2:
+                return 7;
+            case 3:
+                return 8;
         }
     }
 
