@@ -203,7 +203,7 @@ public class GameManager : MonoBehaviour
         if (levelTime <= 0 || poolTime <= 0)
         {
             Debug.Log("Ran out of time.");
-            SceneManager.LoadScene(2);
+            SceneManager.LoadScene(3);
             return;
         }
         

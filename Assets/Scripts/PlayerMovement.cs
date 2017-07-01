@@ -2,40 +2,113 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour {
+public class PlayerMovement : MonoBehaviour
+{
 
-	private float playerChargeJumpForce = 8.0f;		 
-	private float OnGroundTimer = 1f;
-	private bool playerOnGround = false;
-	private int playerCurrentJumps = 0;
-	private int playerMaxJumpCombo = 3;
+    private float playerChargeJumpForce = 8.0f;
+    private float OnGroundTimer = 1f;
+    private bool playerOnGround = false;
+    private int playerCurrentJumps = 0;
+    private int playerMaxJumpCombo = 3;
     private bool PlayerLongJumping = false;
-	private float TotalPlayerOnGroundTime = 1f;
+    private float TotalPlayerOnGroundTime = 1f;
 
     public float JumpComboDecayRate = 0.15f;
-	public float PlayerSpeed = 10.0f;
-	public float PlayerJumpChargeSpeed = 0.2f;
-	public float PlayerJumpMinHeight = 8.0f;
-	public float PlayerJumpMaxHeight = 15.0f;
+    public float PlayerSpeed = 10.0f;
+    public float PlayerJumpChargeSpeed = 0.2f;
+    public float PlayerJumpMinHeight = 8.0f;
+    public float PlayerJumpMaxHeight = 15.0f;
+
+    public Rigidbody rb;
+
+    // Animation
+    private IEnumerator turnRight;
+    private IEnumerator turnLeft;
+    float idleTime = 0f;
+    float timeUntilWave = 4f;
+    private bool aboutToJump = false;
+    [SerializeField]
+    private float turnSpeed = 300f;
+    [SerializeField]
+    private Animator charAnimator;
+    private bool facingRight = true;
+    private bool FacingRight
+    {
+        get { return facingRight; }
+        set
+        {
+            if(value && !facingRight)
+            {
+                FaceRight();
+                facingRight = true;
+            }
+            else if(!value && facingRight)
+            {
+                FaceLeft();
+                facingRight = false;
+            }
+        }
+    }
+
+    // Use this for initialization
+    void Start()
+    {
+        Transform panda = charAnimator.transform;
+        turnLeft = TurnToLeft(panda);
+        turnRight = TurnToRight(panda);
+
+        rb = GetComponent<Rigidbody>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        float playerHorizontalMovement = Input.GetAxis("Horizontal");
+
+        // Animation
+        idleTime += Time.deltaTime;
+        if(Input.anyKeyDown || !playerOnGround)
+        {
+            idleTime = 0f;
+        }
+        if(idleTime >= timeUntilWave)
+        {
+            charAnimator.SetBool("isWaving", true);
+        }
+        else
+        {
+            charAnimator.SetBool("isWaving", false);
+        }
+        if(playerOnGround && !aboutToJump)
+        {
+            charAnimator.SetBool("isJumping", false);
+        }
+
+        if (playerHorizontalMovement > 0.005f)
+        {
+            if(playerOnGround)
+                charAnimator.SetBool("isRunning", true);
+            else
+                charAnimator.SetBool("isRunning", false);
 
 
+            FacingRight = true;
+        }
+        else if (playerHorizontalMovement < -0.005f)
+        {
+            if (playerOnGround)
+                charAnimator.SetBool("isRunning", true);
+            else
+                charAnimator.SetBool("isRunning", false);
 
+            FacingRight = false;
+        }
+        else
+        {
+            charAnimator.SetBool("isRunning", false);
+        }
 
-	public Rigidbody rb;
-
-	// Use this for initialization
-	void Start () 
-	{
-		rb = GetComponent<Rigidbody> ();
-	}
-
-	// Update is called once per frame
-	void Update ()
-	{
-		float playerHorizontalMovement = Input.GetAxis ("Horizontal");
-
-
-		playerHorizontalMovement *= Time.deltaTime * PlayerSpeed;
+        playerHorizontalMovement *= Time.deltaTime * PlayerSpeed;
         if (playerOnGround == false)
         {
             transform.Translate(playerHorizontalMovement, 0, 0);
@@ -45,59 +118,64 @@ public class PlayerMovement : MonoBehaviour {
             transform.Translate(playerHorizontalMovement, 0, 0);
         }
 
-		if (Input.GetButton ("Jump")) 
-		{
-			playerChargeJumpForce += PlayerJumpChargeSpeed;
+        if (Input.GetButton("Jump"))
+        {
+            playerChargeJumpForce += PlayerJumpChargeSpeed;
+            // Animation
+            aboutToJump = true;
+            AboutToJumpCooldown();
+        }
 
-		}
-			
-		if (Input.GetButtonUp ("Jump")) 
-		{
-			if (OnGroundTimer == 0) 
-			{
-				playerCurrentJumps = 0;
-				OnGroundTimer = TotalPlayerOnGroundTime;
-			}
+        if (Input.GetButtonUp("Jump"))
+        {
+            if (OnGroundTimer == 0)
+            {
+                playerCurrentJumps = 0;
+                OnGroundTimer = TotalPlayerOnGroundTime;
+            }
 
             if (playerChargeJumpForce >= PlayerJumpMinHeight)
             {
                 PlayerLongJumping = true;
             }
 
-			Jump (playerHorizontalMovement);
-			OnGroundTimer = TotalPlayerOnGroundTime;
+            Jump(playerHorizontalMovement);
+            OnGroundTimer = TotalPlayerOnGroundTime;
 
-			if (playerCurrentJumps == playerMaxJumpCombo) 
-			{
+            if (playerCurrentJumps == playerMaxJumpCombo)
+            {
                 print("Jump Reset");
-				playerCurrentJumps = 0;
-			}
-		
-		}
-	}
-		
-	void FixedUpdate()
-	{
+                playerCurrentJumps = 0;
+            }
 
-		if (playerOnGround == true) 
-		{
+        }
+    }
+
+
+    void FixedUpdate()
+    {
+
+        if (playerOnGround == true)
+        {
             OnGroundTimer -= JumpComboDecayRate;
-			if (OnGroundTimer <= 0 && playerCurrentJumps >= 1) 
-			{
+            if (OnGroundTimer <= 0 && playerCurrentJumps >= 1)
+            {
                 print("Jump Reset because of TimeOut");
-				playerCurrentJumps = 0;
-			}
-		}
-			
+                playerCurrentJumps = 0;
+            }
+        }
 
-	}
-		
-	void Jump(float HorizontalMotion)
-		{
-		if (playerOnGround == true)
-			{
-			playerOnGround = false;
-			OnGroundTimer = TotalPlayerOnGroundTime;
+
+    }
+
+    void Jump(float HorizontalMotion)
+    {
+        if (playerOnGround == true)
+        {
+
+
+            playerOnGround = false;
+            OnGroundTimer = TotalPlayerOnGroundTime;
             if (playerCurrentJumps == 0)
             {
                 if (playerChargeJumpForce >= PlayerJumpMaxHeight)
@@ -129,7 +207,7 @@ public class PlayerMovement : MonoBehaviour {
                         PlayerLongJumping = false;
                     }
                     else
-                    { 
+                    {
                         rb.velocity = new Vector3(0, (PlayerJumpMaxHeight * (playerCurrentJumps / 1.5f)), 0);
                         playerChargeJumpForce = PlayerJumpMinHeight;
                     }
@@ -152,17 +230,61 @@ public class PlayerMovement : MonoBehaviour {
 
                 }
             }
-			
-		}
-	}
-	void OnCollisionEnter(Collision collision)
-	{
-		if (collision.gameObject.tag == "Ground") 
-		{
-			playerOnGround = true;
-		} 
 
-	}
+        }
+    }
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+        {
+            playerOnGround = true;
+        }
 
-	//End of Script		
+    }
+
+    // Animation.
+    private void FaceRight()
+    {
+        StopCoroutine(turnRight);
+        StopCoroutine(turnLeft);
+        StartCoroutine(turnRight);
+    }
+
+    private void FaceLeft()
+    {
+        StopCoroutine(turnRight);
+        StopCoroutine(turnLeft);
+        StartCoroutine(turnLeft);
+    }
+
+    private IEnumerator TurnToRight(Transform tran)
+    {
+        while(tran.eulerAngles.y > 90)
+        {
+            tran.Rotate(0, -(Time.deltaTime * turnSpeed), 0);
+            yield return null;
+        }
+    }
+
+    private IEnumerator TurnToLeft(Transform tran)
+    {
+        while (tran.eulerAngles.y < 270)
+        {
+            tran.Rotate(0, (Time.deltaTime * turnSpeed), 0);
+            yield return null;
+        }
+    }
+
+    private void AboutToJumpCooldown()
+    {
+        charAnimator.SetBool("isJumping", true);
+        Invoke("ResetAboutToJump", 2f);
+    }
+
+    private void ResetAboutToJump()
+    {
+        
+        aboutToJump = false;      
+    }
+    //End of Script		
 }
