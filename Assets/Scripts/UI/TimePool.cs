@@ -15,6 +15,7 @@ public class TimePool : MonoBehaviour
 
     private void Update()
     {
-        text.text = GameManager.instance.PoolTime.ToString("0");
+        float value = Mathf.Clamp(GameManager.instance.PoolTime, 0, GameManager.instance.TotalTime);
+        text.text = value.ToString("0");
     }
 }

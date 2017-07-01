@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private int levels = 4;
+
     public int TotalLevels
     {
         get { return levels; }
@@ -102,6 +103,7 @@ public class GameManager : MonoBehaviour
             SceneManager.LoadScene(1);
         }
         PlaySound(11);
+        Invoke("PlayBackingMusic", 0.2f);
 
         SceneManager.LoadScene(GetLevelIndex(currentLevel), LoadSceneMode.Additive);
 
@@ -166,6 +168,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        StopBackingMusic();
         PlaySound(0);
         inLevel = true;
         Debug.Log("Started new level.");
@@ -191,6 +194,7 @@ public class GameManager : MonoBehaviour
     public void FinishLevel()
     {
         StopCoroutine(level);
+        StopBackingMusic();
 
         if (levelTime <= 0 || poolTime <= 0)
         {
@@ -242,10 +246,11 @@ public class GameManager : MonoBehaviour
         }
 
         if (SceneManager.GetActiveScene().buildIndex != 1)
-        {         
-            SceneManager.LoadScene(1);          
+        {
+            SceneManager.LoadScene(1);
         }
         PlaySound(9);
+        Invoke("PlayBackingMusic", 3.8f);
 
         SceneManager.LoadScene(GetLevelIndex(currentLevel), LoadSceneMode.Additive);
     }
@@ -374,11 +379,8 @@ public class GameManager : MonoBehaviour
 
     public void PlaySound(int sound)
     {
-        AudioClip clip;
         if (uiButton == null)
-        {
             return;
-        }
         switch (sound)
         {
             default:
@@ -393,7 +395,7 @@ public class GameManager : MonoBehaviour
                 GetComponent<AudioSource>().PlayOneShot(bigPanda[Random.Range(0, bigPanda.Length)]);
                 break;
             case 3:
-                GetComponent<AudioSource>().PlayOneShot(redPanda[Random.Range(0, redPanda.Length)]);
+                GetComponent<AudioSource>().PlayOneShot(redPanda[Random.Range(0, redPanda.Length)], 0.08f);
                 break;
             case 4:
                 GetComponent<AudioSource>().PlayOneShot(jump[Random.Range(0, jump.Length)]);
@@ -420,5 +422,15 @@ public class GameManager : MonoBehaviour
                 GetComponent<AudioSource>().PlayOneShot(bongos);
                 break;
         }
+    }
+
+    public void PlayBackingMusic()
+    {
+        transform.GetChild(0).GetComponent<AudioSource>().Play();
+    }
+
+    public void StopBackingMusic()
+    {
+        transform.GetChild(0).GetComponent<AudioSource>().Stop();
     }
 }

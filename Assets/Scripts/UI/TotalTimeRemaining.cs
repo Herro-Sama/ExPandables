@@ -15,6 +15,6 @@ public class TotalTimeRemaining : MonoBehaviour
 
     private void Start()
     {
-        text.text = "Total Time Remaining: " + GameManager.instance.TotalTime.ToString("0");
+        text.text = "/" + GameManager.instance.TotalTime.ToString("0");
     }
 }

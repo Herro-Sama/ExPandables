@@ -31,6 +31,7 @@ public class TimePickup : MonoBehaviour
 
     private void Pickup()
     {
+        GameManager.instance.PlaySound(1);
         Inventory.instance.AddTimer(time);
         /*
         GameObject newPickupScreen = Instantiate(pickupScreen) as GameObject;

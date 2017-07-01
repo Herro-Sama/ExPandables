@@ -22,16 +22,20 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody rb;
 
     // Animation
+    private bool waved = false;
     private IEnumerator turnRight;
     private IEnumerator turnLeft;
     float idleTime = 0f;
-    float timeUntilWave = 4f;
+    float timeUntilWave = 2.5f;
     private bool aboutToJump = false;
     [SerializeField]
     private float turnSpeed = 300f;
     [SerializeField]
     private Animator charAnimator;
     private bool facingRight = true;
+
+    private float movement = 0;
+
     private bool FacingRight
     {
         get { return facingRight; }
@@ -74,10 +78,18 @@ public class PlayerMovement : MonoBehaviour
         if (idleTime >= timeUntilWave)
         {
             charAnimator.SetBool("isWaving", true);
+            if (!waved)
+            {
+                FaceRight();
+                GameManager.instance.PlaySound(3);
+                waved = true;
+            }
         }
         else
         {
             charAnimator.SetBool("isWaving", false);
+            if (waved)
+                waved = false;
         }
         if (playerOnGround && !aboutToJump)
         {
@@ -109,14 +121,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         playerHorizontalMovement *= Time.deltaTime * PlayerSpeed;
-        if (playerOnGround == false)
-        {
-            transform.Translate(playerHorizontalMovement, 0, 0);
-        }
-        else
-        {
-            transform.Translate(playerHorizontalMovement, 0, 0);
-        }
+        movement = playerHorizontalMovement;
 
         if (Input.GetButton("Jump"))
         {
@@ -154,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-
+        
         if (playerOnGround == true)
         {
             OnGroundTimer -= JumpComboDecayRate;
@@ -165,7 +170,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-
+        transform.Translate(movement, 0, 0);
     }
 
     void Jump(float HorizontalMotion)

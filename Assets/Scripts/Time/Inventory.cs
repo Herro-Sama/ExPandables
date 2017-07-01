@@ -30,7 +30,7 @@ public class Inventory : MonoBehaviour
         newpickupIcon.transform.SetAsFirstSibling();
         newpickupIcon.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 
-        newpickupIcon.transform.GetChild(0).GetComponent<Text>().text = seconds.ToString("0");
+        newpickupIcon.transform.GetChild(1).GetComponent<Text>().text = seconds.ToString("0");
         prompt.SetActive(true);
     }
 
@@ -51,6 +51,7 @@ public class Inventory : MonoBehaviour
 
         GameManager.instance.TakeTimeToLevel(pickups.Dequeue());
         Destroy(transform.GetChild(transform.childCount-1).gameObject);
+        GameManager.instance.PlaySound(7);
 
         if(pickups.Count == 0)
         {
