@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour {
     private bool PlayerLongJumping = false;
 	private float TotalPlayerOnGroundTime = 1f;
 
-    public float JumpComboDecayRate = 0.1f;
+    public float JumpComboDecayRate = 0.15f;
 	public float PlayerSpeed = 10.0f;
 	public float PlayerJumpChargeSpeed = 0.2f;
 	public float PlayerJumpMinHeight = 8.0f;
