@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class FinishLine : MonoBehaviour
 {
-    // DEBUG DEBUG DEBUG
-    private void OnMouseDown()
+    private void OnTriggerEnter(Collider other)
     {
-        FinishLevel();
+        if (other.gameObject.tag == "Player")
+        {
+            FinishLevel();
+        }
     }
-
     private void FinishLevel()
     {
         GameManager.instance.FinishLevel();

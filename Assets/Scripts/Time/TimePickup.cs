@@ -21,10 +21,12 @@ public class TimePickup : MonoBehaviour
         text.text = time.ToString("0");
     }
 
-    // DEBUG DEBUG DEBUG
-    private void OnMouseDown()
+    private void OnTriggerEnter(Collider other)
     {
-        Pickup();
+        if(other.gameObject.tag == "Player")
+        {
+            Pickup();
+        }
     }
 
     private void Pickup()
