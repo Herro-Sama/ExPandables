@@ -35,7 +35,11 @@ public class PlayerMovement : MonoBehaviour {
 
 
 		playerHorizontalMovement *= Time.deltaTime * PlayerSpeed;
-        if (playerOnGround == true)
+        if (playerOnGround == false)
+        {
+            transform.Translate((playerHorizontalMovement / 2), 0, 0);
+        }
+        else
         {
             transform.Translate(playerHorizontalMovement, 0, 0);
         }
@@ -78,7 +82,6 @@ public class PlayerMovement : MonoBehaviour {
 			OnGroundTimer -= Time.fixedDeltaTime;
 			if (OnGroundTimer <= 0 && playerCurrentJumps >= 1) 
 			{
-				print ("Jumping Reset");
 				playerCurrentJumps = 0;
 			}
 		}
@@ -98,14 +101,14 @@ public class PlayerMovement : MonoBehaviour {
                 {
                     Mathf.Clamp(playerChargeJumpForce, 0, PlayerJumpMaxHeight);
                     playerCurrentJumps++;
-                    rb.velocity = new Vector3((HorizontalMotion * 50), PlayerJumpMaxHeight, 0);
+                    rb.velocity = new Vector3(0, PlayerJumpMaxHeight, 0);
                     playerChargeJumpForce = PlayerJumpMinHeight;
                 }
 
                 else
                 {
                     playerCurrentJumps++;
-                    rb.velocity = new Vector3((HorizontalMotion * 50), playerChargeJumpForce, 0);
+                    rb.velocity = new Vector3(0, playerChargeJumpForce, 0);
                     playerChargeJumpForce = PlayerJumpMinHeight;
 
                 }
@@ -118,13 +121,13 @@ public class PlayerMovement : MonoBehaviour {
                     playerCurrentJumps++;
                     if (PlayerLongJumping == true)
                     {
-                        rb.velocity = new Vector3((HorizontalMotion * 70), (PlayerJumpMaxHeight * (playerCurrentJumps / 2f)), 0);
+                        rb.velocity = new Vector3(0, (PlayerJumpMaxHeight * (playerCurrentJumps / 2.5f)), 0);
                         playerChargeJumpForce = PlayerJumpMinHeight;
                         PlayerLongJumping = false;
                     }
                     else
                     { 
-                        rb.velocity = new Vector3((HorizontalMotion * 50), (PlayerJumpMaxHeight * (playerCurrentJumps / 1.5f)), 0);
+                        rb.velocity = new Vector3(0, (PlayerJumpMaxHeight * (playerCurrentJumps / 1.5f)), 0);
                         playerChargeJumpForce = PlayerJumpMinHeight;
                     }
                 }
@@ -134,13 +137,13 @@ public class PlayerMovement : MonoBehaviour {
                     playerCurrentJumps++;
                     if (PlayerLongJumping == true)
                     {
-                        rb.velocity = new Vector3((HorizontalMotion * 70), (PlayerJumpMaxHeight * (playerCurrentJumps / 2f)), 0);
+                        rb.velocity = new Vector3((HorizontalMotion * 80), (PlayerJumpMaxHeight * (playerCurrentJumps / 2.5f)), 0);
                         playerChargeJumpForce = PlayerJumpMinHeight;
                         PlayerLongJumping = false;
                     }
                     else
                     {
-                        rb.velocity = new Vector3((HorizontalMotion * 50), (playerChargeJumpForce * (playerCurrentJumps / 1.5f)), 0);
+                        rb.velocity = new Vector3(0, (playerChargeJumpForce * (playerCurrentJumps / 1.5f)), 0);
                         playerChargeJumpForce = PlayerJumpMinHeight;
                     }
 
