@@ -5,13 +5,14 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour {
 
 	private float playerChargeJumpForce = 8.0f;		 
-	private float OnGroundTimer = 0.5f;
+	private float OnGroundTimer = 1f;
 	private bool playerOnGround = false;
 	private int playerCurrentJumps = 0;
 	private int playerMaxJumpCombo = 3;
     private bool PlayerLongJumping = false;
+	private float TotalPlayerOnGroundTime = 1f;
 
-	public float TotalPlayerOnGroundTime = 0.5f;
+    public float JumpComboDecayRate = 0.1f;
 	public float PlayerSpeed = 10.0f;
 	public float PlayerJumpChargeSpeed = 0.2f;
 	public float PlayerJumpMinHeight = 8.0f;
@@ -37,7 +38,7 @@ public class PlayerMovement : MonoBehaviour {
 		playerHorizontalMovement *= Time.deltaTime * PlayerSpeed;
         if (playerOnGround == false)
         {
-            transform.Translate((playerHorizontalMovement / 2), 0, 0);
+            transform.Translate(playerHorizontalMovement, 0, 0);
         }
         else
         {
@@ -68,6 +69,7 @@ public class PlayerMovement : MonoBehaviour {
 
 			if (playerCurrentJumps == playerMaxJumpCombo) 
 			{
+                print("Jump Reset");
 				playerCurrentJumps = 0;
 			}
 		
@@ -79,9 +81,10 @@ public class PlayerMovement : MonoBehaviour {
 
 		if (playerOnGround == true) 
 		{
-			OnGroundTimer -= Time.fixedDeltaTime;
+            OnGroundTimer -= JumpComboDecayRate;
 			if (OnGroundTimer <= 0 && playerCurrentJumps >= 1) 
 			{
+                print("Jump Reset because of TimeOut");
 				playerCurrentJumps = 0;
 			}
 		}
