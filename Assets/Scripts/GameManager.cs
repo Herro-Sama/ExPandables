@@ -375,6 +375,10 @@ public class GameManager : MonoBehaviour
     public void PlaySound(int sound)
     {
         AudioClip clip;
+        if (uiButton == null)
+        {
+            return;
+        }
         switch (sound)
         {
             default:
