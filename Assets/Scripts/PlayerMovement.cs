@@ -245,15 +245,21 @@ public class PlayerMovement : MonoBehaviour
     // Animation.
     private void FaceRight()
     {
-        StopCoroutine(turnRight);
+        //StopAllCoroutines();     
         StopCoroutine(turnLeft);
+        StopCoroutine(turnRight);
+        Transform panda = charAnimator.transform;
+        turnRight = TurnToRight(panda);
         StartCoroutine(turnRight);
+        //StartCoroutine(turnRight);
     }
 
     private void FaceLeft()
     {
-        StopCoroutine(turnRight);
         StopCoroutine(turnLeft);
+        StopCoroutine(turnRight);
+        Transform panda = charAnimator.transform;
+        turnLeft = TurnToLeft(panda);
         StartCoroutine(turnLeft);
     }
 
